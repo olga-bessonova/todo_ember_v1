@@ -3,7 +3,7 @@ import { on } from '@ember/modifier'
 import { service } from '@ember/service'
 import { tracked } from '@glimmer/tracking'
 
-export default class Item extends Component {
+export default class TodoItem extends Component {
   <template>
     <li class="{{if @todo.completed 'completed'}} {{if this.editing 'editing'}}">
       <div class="view">
@@ -36,15 +36,14 @@ export default class Item extends Component {
 
   @service repo
   @tracked editing
+  
+  removeTodo = () => this.repo.delete(this.args.todo);
 
   toggleCompleted = (event) => {
-    this.args.todo.completed = event.target.checked
-    this.repo.persist()
-  } 
-
-  removeTodo = () => {
-    this.repo.delete(this.args.todo)
+      this.args.todo.completed = event.target.checked;
+			this.repo.persist();
   }
+  
 
   startEditing = (event) => {
     this.args.onStartEdit()
@@ -65,6 +64,14 @@ export default class Item extends Component {
       this.args.todo.title = todoTitle
       this.editing = false
       this.args.onEndEdit()
+    }
+  }
+
+  handleKeydown = (event) => {
+    if (event.KeyCode === 13) {
+      event.target.blur()
+    } else if (event.keyCode === 27) {
+      this.editing = false
     }
   }
 }
